@@ -9,8 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.otssso.samimchala.ravelinlibrary.DeviceInformation
-import com.otssso.samimchala.ravelinlibrary.Location
+import com.otssso.samimchala.ravelinlibrary.RavelinSdk
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -25,21 +24,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val deviceInformation = DeviceInformation(this)
-        val location = Location(this)
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.phoneModel}")
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.ipAddress}")
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.userAgent}")
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.os}")
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.product}")
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.deviceId}")
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.user}")
-        Log.d("sm", "=-0=-0=-0  ${deviceInformation.fingerPrint}")
 
-        if(!checkPermission(locationPermission)){
+        val sdk = RavelinSdk.Builder(this)
+            .setEmail("test")
+            .setName("test")
+            .create()
+
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().phoneModel}")
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().ipAddress}")
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().userAgent}")
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().os}")
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().product}")
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().deviceId}")
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().user}")
+        Log.d("sm", "=-0=-0=-0  ${sdk.getDeviceInformation().fingerPrint}")
+
+        if (!checkPermission(locationPermission)) {
             requestPermission(locationPermission)
-        }else{
-            compositeDisposable = location.coordinates().subscribeOn(Schedulers.io())
+        } else {
+            compositeDisposable = sdk.getDeviceInformation().location.coordinates().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     Log.d("sm", "LOCATION =-0=-0=-0  ${it.first}")
@@ -51,8 +54,10 @@ class MainActivity : AppCompatActivity() {
         if (!checkPermission(readPhonePermission)) {
             requestPermission(readPhonePermission)
         } else {
-            Log.d("sm", "=-0=-0=-0 phone number ${deviceInformation.phoneNumber}")
+            Log.d("sm", "=-0=-0=-0 phone number ${sdk.getDeviceInformation().phoneNumber}")
         }
+
+        Log.d("sm", "=-0=-0=-0 builder ${sdk.getDeviceInformation().ipAddress}")
     }
 
     private fun requestPermission(permission: String) {

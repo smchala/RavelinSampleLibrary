@@ -1,4 +1,4 @@
-package com.otssso.samimchala.ravelinlibrary
+package com.otssso.samimchala.ravelinlibrary.data
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,8 +6,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
