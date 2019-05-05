@@ -9,12 +9,13 @@ import android.os.Bundle
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
-class Location @SuppressLint("MissingPermission") constructor(context: Context) :LocationListener{
-    private var locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    private val LOCATION_REFRESH_TIME: Long = 5000
-    private val LOCATION_REFRESH_DISTANCE: Float = 1.0f
-    private var longLat : PublishSubject<Pair<String, String>> = PublishSubject.create()
-
+class Location @SuppressLint("MissingPermission") constructor(context: Context?) :LocationListener{
+    @Transient private var locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    @Transient private val LOCATION_REFRESH_TIME: Long = 5000
+    @Transient private val LOCATION_REFRESH_DISTANCE: Float = 1.0f
+    @Transient private var longLat : PublishSubject<Pair<String, String>> = PublishSubject.create()
+    private var longitude:String = ""
+    private var latitude:String = ""
     init {
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
@@ -23,7 +24,9 @@ class Location @SuppressLint("MissingPermission") constructor(context: Context) 
 
     override fun onLocationChanged(p0: Location?) {
         p0?.let {location ->
-            longLat.onNext (Pair(location.longitude.toString(), location.latitude.toString()))
+            longitude = location.longitude.toString()
+            latitude = location.latitude.toString()
+            longLat.onNext (Pair(longitude, latitude))
             stopListener()
         }
     }
