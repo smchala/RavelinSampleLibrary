@@ -3,6 +3,7 @@ package com.otssso.samimchala.ravelinlibrary
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
+import com.otssso.samimchala.ravelinlibrary.api.RavelinApi
 import com.otssso.samimchala.ravelinlibrary.data.Blob
 import com.otssso.samimchala.ravelinlibrary.data.Customer
 import com.otssso.samimchala.ravelinlibrary.data.Device
@@ -17,7 +18,7 @@ class RavelinSdk(val builder: Builder) {
 
     private var blobString: String = ""
     var blobJson: PublishSubject<String> = PublishSubject.create()
-    private var compositeDisposable: Disposable = CompositeDisposable()
+    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     private lateinit var blob: Blob
 
@@ -30,7 +31,7 @@ class RavelinSdk(val builder: Builder) {
         //encrypt it + hash
         //update the original json
         //send it on its way!
-        compositeDisposable =
+        compositeDisposable.add(
             builder.device.location.coordinates()
                 .subscribeOn(Schedulers.io())
                 .map {
@@ -54,10 +55,10 @@ class RavelinSdk(val builder: Builder) {
                     blobJson.onNext(json)
                     blobString = json
                 }
+        )
     }
 
     private fun convertToJson(blob: Blob): String = Gson().toJson(blob)
-
 
 //    fun getBlob(): PublishSubject<String> {
 //        return blobJson
@@ -68,11 +69,20 @@ class RavelinSdk(val builder: Builder) {
     }
 
     fun postDeviceInformation() {
+        val customerApi = RavelinApi.getRavelinClient(this.builder.context)
 
+        val json = Gson().toJson(blob)
+        compositeDisposable.add(customerApi.sendBlob(json)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { result -> Log.d("sm", "SUCCESS ") },
+                { error -> Log.e("sm", "ERROR ${error.message} ") }
+            ))
     }
 
     class Builder(
-        context: Context,
+        val context: Context,
         val device: Device = Device(context),
         val customer: Customer = Customer()
         ) {

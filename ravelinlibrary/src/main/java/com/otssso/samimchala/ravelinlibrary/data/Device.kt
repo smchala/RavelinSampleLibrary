@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.WIFI_SERVICE
 import android.net.wifi.WifiManager
-import android.telephony.TelephonyManager
 import android.text.format.Formatter
 import android.webkit.WebView
 

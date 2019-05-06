@@ -3,15 +3,16 @@ package com.otssso.samimchala.ravelinsample
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.otssso.samimchala.ravelinlibrary.RavelinSdk
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 
 
+//could have created a view model to lift all of the logic from the view, and use data binding
 class MainActivity : AppCompatActivity() {
 
     private val INITIAL_PERMS = arrayOf(
@@ -21,9 +22,9 @@ class MainActivity : AppCompatActivity() {
     private val INITIAL_REQUEST = 1
     private val PHONE_STATE_REQUEST = INITIAL_REQUEST + 1
     private val LOCATION_REQUEST = INITIAL_REQUEST + 2
-    private var compositeDisposable: Disposable = CompositeDisposable()
-
+    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var sdk: RavelinSdk
+    private var blob: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +38,22 @@ class MainActivity : AppCompatActivity() {
         } else {
             initSdk()
             findViewById<Button>(R.id.device_information).setOnClickListener {
-                findViewById<TextView>(R.id.blob).text = sdk.getBlob()
+                blob = sdk.getBlob()
+                findViewById<TextView>(R.id.blob).text = blob
+            }
+
+            findViewById<Button>(R.id.send_information).setOnClickListener {
+
+                if (blob.isNotEmpty()) {
+                    Log.d("sm", "mainactivity =-0=-0=-0 ${blob}")
+                    sdk.postDeviceInformation()
+                }else{
+                    Toast.makeText(this, "Please get device info!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
+
     private fun canAccessLocation(): Boolean {
         return hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     }
@@ -61,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initSdk(){
+    private fun initSdk() {
         sdk = RavelinSdk.Builder(this)
             .setEmail("smchala@hotmail.com")
             .setName("Sami Mchala")

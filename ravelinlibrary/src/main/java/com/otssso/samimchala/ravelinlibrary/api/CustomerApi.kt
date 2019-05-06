@@ -1,16 +1,18 @@
 package com.otssso.samimchala.ravelinlibrary.api
 
+import io.reactivex.Observable
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.POST
 import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.POST
 
 
 interface CustomerApi {
+    @Headers("Content-Type: application/json;charset=utf-8")
     @POST("v2/customer")
     fun sendBlob(
-        @Header("Authorization") token: String,
-        @Body blob: String
-    ): Call<ResponseBody>
+        @Body blob: String,
+        @Header("Authorization") token:String = "token secret_key_live_1Od41KPkFXqn9gR4KB8s5l3hvOaGAYqs"//, live key should be in build config file
+    ): Observable<ResponseBody>
 }
