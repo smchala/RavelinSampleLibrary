@@ -4,6 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.otssso.samimchala.ravelinlibrary.RavelinSdk
@@ -11,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,19 +32,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
 
+    override fun onResume() {
+        super.onResume()
         if (!canAccessLocation() || !canReadPhoneState()) {
             requestPermissions(INITIAL_PERMS, INITIAL_REQUEST)
         } else {
-            sdk = RavelinSdk.Builder(this)
-                .setEmail("smchala@hotmail.com")
-                .setName("Sami Mchala")
-                .setSecretKey("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7")//obviously... :)
-                .create()
-            getInfo()
+            initSdk()
+
+            findViewById<Button>(R.id.device_information).setOnClickListener {
+                findViewById<TextView>(R.id.blob).setText(sdk.getBlob())
+            }
+
+
         }
     }
-
     private fun canAccessLocation(): Boolean {
         return hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     }
@@ -59,16 +66,18 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permission Denied.", Toast.LENGTH_LONG).show()
             }
         }
-        getInfo()
+//        initSdk()
     }
 
+    private fun initSdk(){
+        sdk = RavelinSdk.Builder(this)
+            .setEmail("smchala@hotmail.com")
+            .setName("Sami Mchala")
+            .setSecretKey("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7")//obviously... :)
+            .create()
+    }
     private fun getInfo() {
-
-        compositeDisposable = sdk.getBlob().subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                Log.d("sm", "blob =-0=-0=-0  ${it}")
-            }
+        Log.d("sm", "blob =-0=-0=-0  ${sdk.getBlob()}")
     }
 
     override fun onDestroy() {

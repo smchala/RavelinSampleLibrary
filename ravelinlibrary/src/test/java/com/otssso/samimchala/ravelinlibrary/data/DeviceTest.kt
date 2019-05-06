@@ -1,6 +1,5 @@
 package com.otssso.samimchala.ravelinlibrary.data
 
-
 import android.content.Context
 import android.location.LocationManager
 import android.location.LocationProvider
@@ -14,9 +13,8 @@ import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 
-
 @RunWith(MockitoJUnitRunner::class)
-class DeviceTest{
+class DeviceTest {
 
     private lateinit var sut: Device
     @Mock
@@ -25,15 +23,18 @@ class DeviceTest{
     private lateinit var mockLocationManager: LocationManager
     @Mock
     lateinit var newAndroidLocation: android.location.Location
+    @Mock
+    lateinit var mockLocation: Location
 
     @Before
-    fun setUp(){
-
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
         newAndroidLocation = mock(android.location.Location::class.java)
+        getMockLocation()
 
         `when`(mockContext.getSystemService(Context.LOCATION_SERVICE))
             .thenReturn(mockLocationManager)
+        mockLocation = Location(mockContext)
 
         sut = Device(
             mockContext,
@@ -46,22 +47,22 @@ class DeviceTest{
             "deviceId",
             "finger print",
             "user",
-            Location(mockContext)
-            )
+            mockLocation
+        )
     }
 
     @Test
-    fun `checking the device class has all the mandatory fields`(){
-        assertEquals( "0123456789", sut.phoneNumber)
+    fun `checking the device class has all the mandatory fields`() {
+        assertEquals("0123456789", sut.phoneNumber)
         assertEquals("deviceId", sut.deviceId)
-        assertEquals( "1.1.1.1", sut.ipAddress)
-        assertEquals( "userAgent", sut.userAgent)
-        assertEquals( "Google", sut.phoneModel)
-        assertEquals( "4.4.4", sut.os)
-        assertEquals( "product", sut.product)
+        assertEquals("1.1.1.1", sut.ipAddress)
+        assertEquals("userAgent", sut.userAgent)
+        assertEquals("Google", sut.phoneModel)
+        assertEquals("4.4.4", sut.os)
+        assertEquals("product", sut.product)
         assertEquals("deviceId", sut.deviceId)
-        assertEquals( "finger print", sut.fingerPrint)
-        assertEquals( "user", sut.user)
+        assertEquals("finger print", sut.fingerPrint)
+        assertEquals("user", sut.user)
     }
 
     private fun getMockLocation() {

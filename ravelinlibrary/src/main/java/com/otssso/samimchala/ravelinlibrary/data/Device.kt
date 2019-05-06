@@ -20,7 +20,7 @@ class Device(
     val phoneModel: String = android.os.Build.MODEL,
     val os: String = System.getProperty("os.version"),
     val product: String = android.os.Build.PRODUCT,
-    var deviceId: String = android.os.Build.ID,
+    var deviceId: String = "",
     val fingerPrint: String = android.os.Build.FINGERPRINT,
     val user: String = android.os.Build.USER,
     val location: Location = Location(context)

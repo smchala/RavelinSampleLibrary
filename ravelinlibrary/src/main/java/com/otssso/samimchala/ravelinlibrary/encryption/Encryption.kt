@@ -24,10 +24,8 @@ class Encryption{
         return cipher.doFinal(encrypted)
     }
 
-    fun test(key1:String, data:ByteArray){
-        Log.d("sm", "--------=-0=-0=-0-0  key1 ${key1}")
+    fun encryptAndHash(key1:String, data:ByteArray): String {
         val keyStart = key1.toByteArray()
-        Log.d("sm", "--------=-0=-0=-0-0  keyStart ${String(keyStart)}")
 
         val kgen = KeyGenerator.getInstance("AES")
         val sr = SecureRandom.getInstance("SHA1PRNG")
@@ -36,16 +34,13 @@ class Encryption{
         val skey = kgen.generateKey()
         val key = skey.getEncoded()
 
-// encrypt
         val encryptedData = encrypt(key, data)
-//        Log.d("sm", "encryptedData =-0=-0=-0  ${String(encryptedData)}")
 
-        val t = HashUtils.sha1(String(encryptedData))
-        Log.d("sm", "hash =-0=-0=-0  ${t}")
-
-// decrypt
+        //just for logging
         val decryptedData = decrypt(key, encryptedData)
-        Log.d("sm", "decryptedData =-0=-0=-0  ${ String(decryptedData)}")
+        Log.d("sm", "decryptedData =-0=-0=-0  ${String(decryptedData)}")
+
+        return HashUtils.sha1(String(encryptedData))
 
     }
 }

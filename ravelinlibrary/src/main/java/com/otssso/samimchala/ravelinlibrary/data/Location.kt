@@ -9,13 +9,14 @@ import android.os.Bundle
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
-class Location @SuppressLint("MissingPermission") constructor(context: Context?) :LocationListener{
-    @Transient private var locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+class Location @SuppressLint("MissingPermission") constructor(@Transient var context: Context?) :LocationListener{
+    @Transient var locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     @Transient private val LOCATION_REFRESH_TIME: Long = 5000
     @Transient private val LOCATION_REFRESH_DISTANCE: Float = 1.0f
     @Transient private var longLat : PublishSubject<Pair<String, String>> = PublishSubject.create()
     private var longitude:String = ""
     private var latitude:String = ""
+
     init {
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,

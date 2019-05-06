@@ -17,7 +17,6 @@ object HashUtils {
             result.append(HEX_CHARS[i shr 4 and 0x0f])
             result.append(HEX_CHARS[i and 0x0f])
         }
-
         return result.toString()
     }
 }
