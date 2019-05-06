@@ -38,31 +38,22 @@ class DeviceTest {
 
         sut = Device(
             mockContext,
-            "0123456789",
             "1.1.1.1",
             "userAgent",
             "Google",
             "4.4.4",
-            "product",
             "deviceId",
-            "finger print",
-            "user",
             mockLocation
         )
     }
 
     @Test
     fun `checking the device class has all the mandatory fields`() {
-        assertEquals("0123456789", sut.phoneNumber)
         assertEquals("deviceId", sut.deviceId)
         assertEquals("1.1.1.1", sut.ipAddress)
         assertEquals("userAgent", sut.userAgent)
-        assertEquals("Google", sut.phoneModel)
         assertEquals("4.4.4", sut.os)
-        assertEquals("product", sut.product)
         assertEquals("deviceId", sut.deviceId)
-        assertEquals("finger print", sut.fingerPrint)
-        assertEquals("user", sut.user)
     }
 
     private fun getMockLocation() {

@@ -35,15 +35,11 @@ class BlobTest {
         customer = Customer()
         device = Device(
             mockContext,
-            "0123456789",
             "1.1.1.1",
             "userAgent",
             "Google",
             "4.4.4",
             "product",
-            "deviceId",
-            "finger print",
-            "user",
             Location(mockContext)
         )
         sut = Blob(customer, device, 1234)
