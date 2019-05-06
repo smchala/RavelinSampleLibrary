@@ -11,7 +11,7 @@ import java.io.IOException
 
 object RavelinApi {
 
-    //could create a client and pass through the headers for every call! then set it in retrofit
+    //should be in a build config file
     private val BASE_URL = "https://api-staging.ravelin.com/"
 
     private lateinit var customerApi: CustomerApi

@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         sdk = RavelinSdk.Builder(this)
             .setEmail("smchala@hotmail.com")
             .setName("Sami Mchala")
-            .setSecretKey("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7")//obviously... :)
+            .setSecretKey("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7")//... :)
             .create()
     }
 
