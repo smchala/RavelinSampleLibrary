@@ -7,11 +7,14 @@ in test app gradle:
 
 implementation project(path: ':ravelinlibrary')
 
-to initialise: sdk = RavelinSdk.Builder(this)
-            .setEmail("smchala@hotmail.com")
-            .setName("Sami Mchala")
-            .setSecretKey(SECRET)//... :)
-            .create()
+to initialise: 
+
+sdk = RavelinSdk.Builder(this)
+.setEmail("smchala@hotmail.com")
+.setName("Sami Mchala")
+.setSecretKey(SECRET)//... :)
+.create()
+
             
 get DeviceInfo: sdk.getBlob()
 
