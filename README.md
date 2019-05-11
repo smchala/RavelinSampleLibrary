@@ -36,6 +36,12 @@ Seperation of concern, single responsability...
 ### Outstanding: 
 due to time constraint had to stop and getting bad request, 400 code after api call, need fixing
 
+charles proxy:
+ERROR Hostname api-staging.ravelin.com not verified:
+        certificate: sha256/EPzroxdhnB2Wg6C8/ui9o8/SeXO67WTB/FfJXRmZoBA=
+        DN: CN=api-staging.ravdns1.co.uk
+        subjectAltNames: [api-staging.ravdns1.co.uk] 
+        
 License
 ----
 MIT
