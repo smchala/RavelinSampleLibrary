@@ -1,6 +1,5 @@
 package com.otssso.samimchala.ravelinlibrary.api
 
-import android.content.Context
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -16,7 +15,7 @@ object RavelinApi {
 
     private lateinit var customerApi: CustomerApi
 
-    fun getRavelinClient(context: Context): CustomerApi {
+    fun getRavelinClient(): CustomerApi {
 
         val clientBuilder = OkHttpClient.Builder()
         val headerAuthorizationInterceptor = object : Interceptor {

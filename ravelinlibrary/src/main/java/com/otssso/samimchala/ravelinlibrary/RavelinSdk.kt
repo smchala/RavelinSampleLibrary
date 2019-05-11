@@ -68,16 +68,18 @@ class RavelinSdk(val builder: Builder) {
     }
 
     fun postDeviceInformation() {
-        val customerApi = RavelinApi.getRavelinClient(this.builder.context)
+        val customerApi = RavelinApi.getRavelinClient()
 
         val json = Gson().toJson(blob)
-        compositeDisposable.add(customerApi.sendBlob(json)
+//        compositeDisposable.add(
+            customerApi.sendBlob(json)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { result -> Log.d("sm", "SUCCESS ") },
+                { result -> Log.d("sm", "SUCCESS ${result}") },
                 { error -> Log.e("sm", "ERROR ${error.message} ") }
-            ))
+            )
+//        )
     }
 
     class Builder(

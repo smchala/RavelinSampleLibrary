@@ -47,6 +47,6 @@ class BlobTest {
 
     @Test
     fun `check blob has a time stamp`() {
-        Assert.assertEquals(1234, sut.timeStamp)
+        Assert.assertEquals(1234, sut.timestamp)
     }
 }

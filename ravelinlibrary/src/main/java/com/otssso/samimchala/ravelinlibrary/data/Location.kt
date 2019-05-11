@@ -10,17 +10,19 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 class Location @SuppressLint("MissingPermission") constructor(@Transient var context: Context?) :LocationListener{
-    @Transient var locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    @Transient var locationManager: LocationManager? = context?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
     @Transient private val LOCATION_REFRESH_TIME: Long = 5000
     @Transient private val LOCATION_REFRESH_DISTANCE: Float = 1.0f
     @Transient private var longLat : PublishSubject<Pair<Double, Double>> = PublishSubject.create()
-    private var longitude:Double = 0.0
-    private var latitude:Double = 0.0
+    var longitude:Double = 0.0
+    var latitude:Double = 0.0
 
     init {
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-            LOCATION_REFRESH_DISTANCE, this)
+        locationManager?.let {
+            it.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, this)
+        }
     }
 
     override fun onLocationChanged(p0: Location?) {
@@ -36,8 +38,10 @@ class Location @SuppressLint("MissingPermission") constructor(@Transient var con
     override fun onProviderEnabled(p0: String?) {}
     override fun onProviderDisabled(p0: String?) {}
 
-    private fun stopListener(){
-        locationManager.removeUpdates(this)
+    fun stopListener(){
+        locationManager?.let {
+            it.removeUpdates(this)
+        }
     }
 
     fun coordinates(): Observable<Pair<Double, Double>> = longLat

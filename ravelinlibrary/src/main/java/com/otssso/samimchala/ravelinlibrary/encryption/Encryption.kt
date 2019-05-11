@@ -27,20 +27,27 @@ class Encryption{
     fun encryptAndHash(key1:String, data:ByteArray): String {
         val keyStart = key1.toByteArray()
 
+        val key = setKey(keyStart)
+
+        val encryptedData = encrypt(key, data)
+
+        //just for logging
+        val decryptedData = decrypt(key, encryptedData)
+//        Log.d("sm", "decryptedData =-0=-0=-0  ${String(decryptedData)}")
+//        Log.d("sm", "decryptedData =-0=-0=-0 key ${String(key)}")
+//        Log.d("sm", "decryptedData =-0=-0=-0 key ${key}}")
+
+        return HashUtils.sha1(String(encryptedData))
+
+    }
+
+    private fun setKey(keyStart: ByteArray): ByteArray {
         val kgen = KeyGenerator.getInstance("AES")
         val sr = SecureRandom.getInstance("SHA1PRNG")
         sr.setSeed(keyStart)
         kgen.init(128, sr) // 192 and 256 bits may not be available
         val skey = kgen.generateKey()
         val key = skey.getEncoded()
-
-        val encryptedData = encrypt(key, data)
-
-        //just for logging
-        val decryptedData = decrypt(key, encryptedData)
-        Log.d("sm", "decryptedData =-0=-0=-0  ${String(decryptedData)}")
-
-        return HashUtils.sha1(String(encryptedData))
-
+        return key
     }
 }
