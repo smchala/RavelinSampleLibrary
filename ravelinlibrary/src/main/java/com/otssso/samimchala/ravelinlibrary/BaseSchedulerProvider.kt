@@ -5,10 +5,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 
-
-/**
- * Created by Paulina Sadowska on 16.05.2018.
- */
+//experimenting!
 interface BaseSchedulerProvider {
     fun io(): Scheduler
     fun computation(): Scheduler

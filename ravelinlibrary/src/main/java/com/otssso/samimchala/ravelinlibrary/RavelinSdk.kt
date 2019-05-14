@@ -31,14 +31,6 @@ class RavelinSdk(
 
     fun getBlobJSON(): Observable<String> {
 
-        //find a better way of doing this, for now the only async call back is the coordinates
-        // combineLatest + BiFunction to allow mutliple call backs from different sources!
-
-        //this will wait for the coordinates to show up
-        //then create the original json blob with deviceId
-        //encrypt it + hash
-        //update the original json
-        //send it on its way!
 //        val coordinates = builder.device.location.coordinates()
 //            .subscribeOn(schedulerProvider.io())
 //            .map {
@@ -62,9 +54,6 @@ class RavelinSdk(
 //                blobString = json
 //            }
 
-        //find a better way of doing this, for now the only async call back is the coordinates
-        // combineLatest + BiFunction to allow mutliple call backs from different sources!
-
         //this will wait for the coordinates to show up
         //then create the original json blob with deviceId
         //encrypt it + hash
@@ -74,18 +63,9 @@ class RavelinSdk(
             .compose(convertToJSON())
             .compose(encrypt())
             .compose(convertFroStringToJSON())
-            .compose(emitOnNext())
 
     }
 
-    private fun emitOnNext(): ObservableTransformer<String, String> {
-        return ObservableTransformer {
-            it.map { json ->
-                Log.d("sm", "=-0=-0=-0=-0-0  COMPOSE getBlobJSON =-0=-0=-0=-0-0 ${json}")
-                json
-            }
-        }
-    }
 
     private fun convertFroStringToJSON(): ObservableTransformer<String, String> {
         return ObservableTransformer {

@@ -40,22 +40,21 @@ class MainActivity : AppCompatActivity() {
         } else {
             initSdk()
             findViewById<Button>(R.id.device_information).setOnClickListener {
-                Log.d("sm", "=-0=-0=-0=-00000   CLICKED")
 
-                sdk.getBlobJSON()!!
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe{
-                        Log.d("sm", "HELLO =-0=-0=-0=-00000 mainactivity  ${it}")
-                        findViewById<TextView>(R.id.blob).text = it
-                        blob = it
-                    }
+                sdk.getBlobJSON()?.let {observer ->
+                    observer.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe{
+                            Log.d("sm", "HELLO =-0=-0=-0=-00000 mainactivity  ${it}")
+                            findViewById<TextView>(R.id.blob).text = it
+                            blob = it
+                        }
+                }
             }
 
             findViewById<Button>(R.id.send_information).setOnClickListener {
 
                 if (blob.isNotEmpty()) {
-                    Log.d("sm", "mainactivity =-0=-0=-0 ${blob}")
                     sdk.postDeviceInformation()
                 }else{
                     Toast.makeText(this, "Please get device info!", Toast.LENGTH_SHORT).show()
@@ -90,8 +89,6 @@ class MainActivity : AppCompatActivity() {
             .setName("Sami Mchala")
             .setSecretKey("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7")//... :)
             .create()
-
-//        sdk.getBlobJSON()
     }
 
     override fun onDestroy() {
