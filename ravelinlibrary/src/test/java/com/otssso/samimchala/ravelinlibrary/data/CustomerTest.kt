@@ -27,9 +27,26 @@ class CustomerTest {
             "email",
             "name"
         )
-
         Assert.assertEquals("customerId", sut.customerId)
-        Assert.assertEquals("email", sut.email)
+        Assert.assertEquals("email@email.com", sut.email)
         Assert.assertEquals("name", sut.name)
+    }
+
+    @Test
+    fun `check customer name does only contains aplhabetical letters, no special characters`(){
+        sut = Customer(name = "name=-0")
+        Assert.assertEquals("default", sut.name)
+    }
+
+    @Test
+    fun `check customer name does only contains aplhabetical letters, no numbers`(){
+        sut = Customer(name = "1234name")
+        Assert.assertEquals("default", sut.name)
+    }
+
+    @Test
+    fun `check customer email is a valid one`(){
+        sut = Customer(email = "1234name")
+        Assert.assertEquals("email@email.com", sut.email)
     }
 }

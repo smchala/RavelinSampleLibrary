@@ -6,9 +6,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 
 class Location @SuppressLint("MissingPermission") constructor(@Transient var context: Context?) :LocationListener{
     var longitude:Double = 0.0

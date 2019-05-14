@@ -2,10 +2,6 @@ package com.otssso.samimchala.ravelinlibrary.data
 
 import android.content.Context
 import android.location.LocationManager
-import android.location.LocationProvider
-import io.reactivex.Scheduler
-import io.reactivex.schedulers.TestScheduler
-import io.reactivex.subjects.PublishSubject
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

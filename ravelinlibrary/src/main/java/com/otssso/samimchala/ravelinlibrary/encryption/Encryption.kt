@@ -1,6 +1,5 @@
 package com.otssso.samimchala.ravelinlibrary.encryption
 
-import android.util.Log
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator

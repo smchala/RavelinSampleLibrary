@@ -2,15 +2,11 @@ package com.otssso.samimchala.ravelinlibrary
 
 import android.content.Context
 import android.location.LocationManager
-import android.util.Log
-import android.widget.TextView
 import com.google.gson.Gson
 import com.otssso.samimchala.ravelinlibrary.data.Blob
 import com.otssso.samimchala.ravelinlibrary.data.Customer
 import com.otssso.samimchala.ravelinlibrary.data.Device
 import com.otssso.samimchala.ravelinlibrary.data.Location
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.After
