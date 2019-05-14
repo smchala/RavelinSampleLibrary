@@ -33,13 +33,10 @@ class DeviceTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         newAndroidLocation = mock(android.location.Location::class.java)
-//        getMockLocation()
 
         `when`(mockContext.getSystemService(Context.LOCATION_SERVICE))
             .thenReturn(mockLocationManager)
-        `when`(mockLocation.latitude).thenReturn(1.0)
-        `when`(mockLocation.longitude).thenReturn(1.0)
-//        `when`(mockLocation.longLat).thenReturn(1.0)
+
         mockLocation = Location(mockContext)
 
         sut = Device(
@@ -60,75 +57,5 @@ class DeviceTest {
         assertEquals("userAgent", sut.userAgent)
         assertEquals("4.4.4", sut.os)
         assertEquals("deviceId", sut.deviceId)
-    }
-
-    private fun getMockLocation() {
-        mockLocationManager.removeTestProvider(LocationManager.GPS_PROVIDER)
-        mockLocationManager.addTestProvider(
-            LocationManager.GPS_PROVIDER,
-            "requiresNetwork" === "",
-            "requiresSatellite" === "",
-            "requiresCell" === "",
-            "hasMonetaryCost" === "",
-            "supportsAltitude" === "",
-            "supportsSpeed" === "",
-            "supportsBearing" === "",
-            android.location.Criteria.POWER_LOW,
-            android.location.Criteria.ACCURACY_FINE
-        )
-
-        newAndroidLocation.latitude = 37.421998333333335
-        newAndroidLocation.longitude = -122.08400000000002
-
-        newAndroidLocation.accuracy = 500F
-
-        mockLocationManager.setTestProviderEnabled(
-            LocationManager.GPS_PROVIDER,
-            true
-        )
-
-        mockLocationManager.setTestProviderStatus(
-            LocationManager.GPS_PROVIDER,
-            LocationProvider.AVAILABLE,
-            null,
-            System.currentTimeMillis()
-        )
-
-        mockLocationManager.setTestProviderLocation(
-            LocationManager.GPS_PROVIDER,
-            newAndroidLocation
-        )
-    }
-
-
-    val testPublisher = PublishSubject.create<String>()
-
-    var value:String = "initial"
-
-    fun myRxFunction(ioThread:Scheduler,mainThread: Scheduler){
-        testPublisher
-            .subscribeOn(ioThread)
-            .observeOn(mainThread)
-            .subscribe{
-                saveString(it)
-            }
-    }
-
-    fun saveString(message:String){
-        value = message
-    }
-
-    @Test
-    fun myRxFunctionTest(){
-        val testString = "test"
-        val testScheduler = TestScheduler()
-
-        myRxFunction(testScheduler,testScheduler)
-
-        testScheduler.triggerActions()
-
-        testPublisher.onNext(testString)
-
-        assertEquals(value,testString)
     }
 }

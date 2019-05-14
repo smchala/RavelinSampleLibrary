@@ -11,9 +11,9 @@ import org.mockito.Mockito.*
 
 class LocationTest{
 
+    lateinit var sut: Location
     @Mock
     private lateinit var newLocation: android.location.Location
-    lateinit var sut: Location
     @Mock
     lateinit var mockContext:Context
     @Mock
@@ -26,6 +26,7 @@ class LocationTest{
         sut = Location(mockContext)
 
         mockLocationManager = mock(LocationManager::class.java)
+        newLocation = mock(android.location.Location::class.java)
 
         mockLocationManager.addTestProvider(LocationManager.GPS_PROVIDER,
             false,
@@ -38,7 +39,7 @@ class LocationTest{
             android.location.Criteria.POWER_LOW,
             android.location.Criteria.ACCURACY_FINE)
 
-        newLocation = android.location.Location(LocationManager.GPS_PROVIDER)
+//        newLocation = android.location.Location(LocationManager.GPS_PROVIDER)
 
         mockLocationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
 
@@ -50,6 +51,12 @@ class LocationTest{
 
         mockLocationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation)
         sut.locationManager = mockLocationManager
+
+
+        newLocation.latitude = 1.0
+        newLocation.longitude = 1.0
+        sut.latitude = 0.0
+        sut.longitude = 0.0
     }
 
     @Test
