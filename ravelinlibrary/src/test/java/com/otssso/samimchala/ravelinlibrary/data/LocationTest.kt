@@ -3,30 +3,31 @@ package com.otssso.samimchala.ravelinlibrary.data
 import android.content.Context
 import android.location.LocationManager
 import android.location.LocationProvider
-import android.util.Log
-import junit.framework.Assert.assertEquals
+import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations.initMocks
-
 
 class LocationTest{
 
     @Mock
+    private lateinit var newLocation: android.location.Location
     lateinit var sut: Location
     @Mock
     lateinit var mockContext:Context
+    @Mock
+    lateinit var mockLocationManager: LocationManager
 
     @Before
     fun setUp(){
 
         mockContext = mock(Context::class.java)
         sut = Location(mockContext)
-        initMocks(sut)
 
-        sut.locationManager?.addTestProvider(LocationManager.GPS_PROVIDER,
+        mockLocationManager = mock(LocationManager::class.java)
+
+        mockLocationManager.addTestProvider(LocationManager.GPS_PROVIDER,
             false,
             false,
             false,
@@ -37,42 +38,40 @@ class LocationTest{
             android.location.Criteria.POWER_LOW,
             android.location.Criteria.ACCURACY_FINE)
 
-        val newLocation = android.location.Location(LocationManager.GPS_PROVIDER)
-        sut.locationManager?.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
+        newLocation = android.location.Location(LocationManager.GPS_PROVIDER)
 
-        sut.locationManager?.setTestProviderStatus(
+        mockLocationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
+
+        mockLocationManager.setTestProviderStatus(
             LocationManager.GPS_PROVIDER,
             LocationProvider.AVAILABLE,
             null, System.currentTimeMillis()
         )
-        sut.locationManager?.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation)
 
-        sut.latitude = 1.0
-        sut.longitude = 1.0
+        mockLocationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation)
+        sut.locationManager = mockLocationManager
     }
 
     @Test
-    fun `checking we can get longitude and latitude`(){
-
-        assertEquals(1.0, sut.latitude)
-        assertEquals(1.0, sut.longitude)
+    fun `testing we getting default location, longitude and latitude`(){
+        assertEquals(0.0, sut.latitude)
+        assertEquals(0.0, sut.longitude)
     }
-
 
     @Test
-    fun `verify that stopListener is invoked once we receive a location`(){
-//        Log.d("sm", "=-0=-0=-0=-0 providers:  ${sut.locationManager?.getProviders(true)?.size}")
-
-        assertEquals(1.0, sut.latitude)
-
-        verify(sut.locationManager, atLeastOnce())?.removeUpdates(sut)
-//        Log.d("sm", "=-0=-0=-0=-0 providers:  ${sut.locationManager?.getProviders(true)?.size}")
-
-
-//        sut.locationManager?.getLastKnownLocation()?.latitude
-
-
+    fun `checking coordinates have a default value`() {
+        assertEquals(sut.coordinates().value,Pair(0.0,0.0))
     }
 
+    @Test
+    fun `checking coordinates are returned when longLat is set by the locationListener callback`() {
+        sut.longLat.onNext(Pair(10.0,10.0))
+        assertEquals(sut.coordinates().value,Pair(10.0,10.0))
+    }
 
+    @Test
+    fun `checking when new coordinates are set, stopListener is invoked`() {
+        sut.onLocationChanged(newLocation)
+        verify(mockLocationManager, atLeastOnce()).removeUpdates(sut)
+    }
 }

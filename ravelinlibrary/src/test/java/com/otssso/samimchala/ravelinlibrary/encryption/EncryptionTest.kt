@@ -14,7 +14,7 @@ class EncryptionTest {
 
         val e = Encryption()
         val k = setKey("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7".toByteArray())
-        assertEquals("1234567890", decrypt(k, "34D8F66047E5B1D6A5BD8FA11E0186818A645DBE".toByteArray()))
+        assertEquals("1234567890".toByteArray(), decrypt(k, "".toByteArray()))
         assertEquals("34D8F66047E5B1D6A5BD8FA11E0186818A645DBE", e.encryptAndHash("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7", "1234567890".toByteArray()))
 
     }

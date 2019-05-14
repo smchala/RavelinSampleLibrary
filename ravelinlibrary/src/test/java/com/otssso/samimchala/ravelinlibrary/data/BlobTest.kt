@@ -2,6 +2,7 @@ package com.otssso.samimchala.ravelinlibrary.data
 
 import android.content.Context
 import android.location.LocationManager
+import junit.framework.TestCase.assertEquals
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -48,5 +49,22 @@ class BlobTest {
     @Test
     fun `check blob has a time stamp`() {
         Assert.assertEquals(1234, sut.timestamp)
+    }
+
+    @Test
+    fun `check blob has a device object`() {
+        assertEquals("product", sut.device.deviceId)
+        assertEquals("1.1.1.1", sut.device.ipAddress)
+        assertEquals("userAgent", sut.device.userAgent)
+        assertEquals("4.4.4", sut.device.os)
+        assertEquals(0.0, sut.device.location.latitude)
+        assertEquals(0.0, sut.device.location.latitude)
+    }
+
+    @Test
+    fun `check blob has a customer object`() {
+        assertEquals("default", sut.customer.customerId)
+        assertEquals("default", sut.customer.customerId)
+        assertEquals("default", sut.customer.customerId)
     }
 }

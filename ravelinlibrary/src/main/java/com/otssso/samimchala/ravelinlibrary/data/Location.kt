@@ -7,29 +7,28 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class Location @SuppressLint("MissingPermission") constructor(@Transient var context: Context?) :LocationListener{
+    var longitude:Double = 0.0
+    var latitude:Double = 0.0
     @Transient var locationManager: LocationManager? = context?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
     @Transient private val LOCATION_REFRESH_TIME: Long = 5000
     @Transient private val LOCATION_REFRESH_DISTANCE: Float = 1.0f
-    @Transient private var longLat : PublishSubject<Pair<Double, Double>> = PublishSubject.create()
-    var longitude:Double = 0.0
-    var latitude:Double = 0.0
+    @Transient var longLat : BehaviorSubject<Pair<Double, Double>> = BehaviorSubject.createDefault(Pair(longitude, latitude))
 
     init {
-        locationManager?.let {
-            it.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, this)
-        }
+        locationManager?.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+            LOCATION_REFRESH_DISTANCE, this)
     }
 
     override fun onLocationChanged(p0: Location?) {
         p0?.let {location ->
             longitude = location.longitude
             latitude = location.latitude
-            longLat.onNext (Pair(longitude, latitude))
+            longLat.onNext(Pair(longitude, latitude))
             stopListener()
         }
     }
@@ -38,11 +37,10 @@ class Location @SuppressLint("MissingPermission") constructor(@Transient var con
     override fun onProviderEnabled(p0: String?) {}
     override fun onProviderDisabled(p0: String?) {}
 
-    fun stopListener(){
-        locationManager?.let {
-            it.removeUpdates(this)
-        }
+    private fun stopListener(){
+        locationManager?.removeUpdates(this)
     }
 
-    fun coordinates(): Observable<Pair<Double, Double>> = longLat
+    fun coordinates(): BehaviorSubject<Pair<Double, Double>> = longLat
 }
+

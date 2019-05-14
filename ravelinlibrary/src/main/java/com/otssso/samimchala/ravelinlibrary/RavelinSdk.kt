@@ -8,20 +8,29 @@ import com.otssso.samimchala.ravelinlibrary.data.Blob
 import com.otssso.samimchala.ravelinlibrary.data.Customer
 import com.otssso.samimchala.ravelinlibrary.data.Device
 import com.otssso.samimchala.ravelinlibrary.encryption.Encryption
+import io.reactivex.Observable
+import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
-class RavelinSdk(val builder: Builder) {
+class RavelinSdk(
+    val builder: Builder,
+    private val schedulerProvider: BaseSchedulerProvider,
+    val encryption: Encryption = Encryption()
+) {
 
     private var blobString: String = ""
     var blobJson: PublishSubject<String> = PublishSubject.create()
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-
     private lateinit var blob: Blob
 
-    init {
+    private fun convertToJson(blob: Blob): String = Gson().toJson(blob)
+
+    fun getBlobJSON(): Observable<String> {
+
         //find a better way of doing this, for now the only async call back is the coordinates
         // combineLatest + BiFunction to allow mutliple call backs from different sources!
 
@@ -30,63 +39,107 @@ class RavelinSdk(val builder: Builder) {
         //encrypt it + hash
         //update the original json
         //send it on its way!
-        compositeDisposable.add(
-            builder.device.location.coordinates()
-                .subscribeOn(Schedulers.io())
-                .map {
-                    blob = Blob(builder.customer, builder.device)
-                    convertToJson(blob)
-                }
-                .map { json ->
-                    val encryption = Encryption()
-                    encryption.encryptAndHash(
-                        builder.key,
-                        json.toByteArray()
-                    )//key in the clear! try to make it less obvious, obfuscation...
+//        val coordinates = builder.device.location.coordinates()
+//            .subscribeOn(schedulerProvider.io())
+//            .map {
+//                blob = Blob(builder.customer, builder.device)
+//                convertToJson(blob)
+//            }
+//            .map { json ->
+//                encryption.encryptAndHash(
+//                    builder.key,
+//                    json.toByteArray()
+//                )//key in the clear! try to make it less obvious, obfuscation...
+//
+//            }.map { encryptedAndHashedJsonBlob ->
+//                blob.device.deviceId = encryptedAndHashedJsonBlob
+//                convertToJson(blob)
+//            }
+//            .observeOn(schedulerProvider.ui())
+//            .subscribe { json ->
+//                Log.d("sm", "getBlobJSON =-0=-0=-0=-0-0 ${json}")
+//                blobJson.onNext(json)
+//                blobString = json
+//            }
 
-                }.map { encryptedAndHashedJsonBlob ->
-                    blob.device.deviceId = encryptedAndHashedJsonBlob
-                    convertToJson(blob)
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { json ->
-                    Log.d("sm", "=-0=-0=-0=-0-0 ${json}")
-                    blobJson.onNext(json)
-                    blobString = json
-                }
-        )
+        //find a better way of doing this, for now the only async call back is the coordinates
+        // combineLatest + BiFunction to allow mutliple call backs from different sources!
+
+        //this will wait for the coordinates to show up
+        //then create the original json blob with deviceId
+        //encrypt it + hash
+        //update the original json
+        //send it on its way!
+        return builder.device.location.coordinates()
+            .compose(convertToJSON())
+            .compose(encrypt())
+            .compose(convertFroStringToJSON())
+            .compose(emitOnNext())
+
     }
 
-    private fun convertToJson(blob: Blob): String = Gson().toJson(blob)
+    private fun emitOnNext(): ObservableTransformer<String, String> {
+        return ObservableTransformer {
+            it.map { json ->
+                Log.d("sm", "=-0=-0=-0=-0-0  COMPOSE getBlobJSON =-0=-0=-0=-0-0 ${json}")
+                json
+            }
+        }
+    }
 
-//    fun getBlob(): PublishSubject<String> {
-//        return blobJson
+    private fun convertFroStringToJSON(): ObservableTransformer<String, String> {
+        return ObservableTransformer {
+            it.map { encryptedAndHashedJsonBlob ->
+                blob.device.deviceId = encryptedAndHashedJsonBlob
+                convertToJson(blob)
+            }
+        }
+    }
+
+    private fun encrypt(): ObservableTransformer<String, String> {
+        return ObservableTransformer {
+            it.map { json ->
+                encryption.encryptAndHash(
+                    builder.key,
+                    json.toByteArray()
+                )//key in the clear! try to make it less obvious, obfuscation...
+
+            }
+        }
+    }
+
+    private fun convertToJSON(): ObservableTransformer<Pair<Double, Double>, String> {
+        return ObservableTransformer {
+            it.map {
+                blob = Blob(builder.customer, builder.device)
+                convertToJson(blob)
+            }
+        }
+    }
+
+//    fun getBlob(): String {
+//        return blobString
 //    }
-
-    fun getBlob(): String {
-        return blobString
-    }
 
     fun postDeviceInformation() {
         val customerApi = RavelinApi.getRavelinClient()
 
         val json = Gson().toJson(blob)
-//        compositeDisposable.add(
-            customerApi.sendBlob(json)
+        compositeDisposable.add(customerApi.sendBlob(json)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { result -> Log.d("sm", "SUCCESS ${result}") },
+                { result -> Log.d("sm", "SUCCESS ") },
                 { error -> Log.e("sm", "ERROR ${error.message} ") }
-            )
-//        )
+            ))
     }
 
     class Builder(
         val context: Context,
         val device: Device = Device(context),
-        val customer: Customer = Customer()
-        ) {
+        val customer: Customer = Customer(),
+        val schedulerProvider: BaseSchedulerProvider = SchedulerProvider()
+    ) {
 
         private lateinit var name: String
         private lateinit var email: String
@@ -106,7 +159,7 @@ class RavelinSdk(val builder: Builder) {
             this.customer.customerId = email
             this.customer.email = email
             this.customer.name = name
-            return RavelinSdk(this)
+            return RavelinSdk(this, schedulerProvider)
         }
 
         fun setSecretKey(key: String): Builder {

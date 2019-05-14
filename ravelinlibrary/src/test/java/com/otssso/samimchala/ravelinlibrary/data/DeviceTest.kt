@@ -3,6 +3,9 @@ package com.otssso.samimchala.ravelinlibrary.data
 import android.content.Context
 import android.location.LocationManager
 import android.location.LocationProvider
+import io.reactivex.Scheduler
+import io.reactivex.schedulers.TestScheduler
+import io.reactivex.subjects.PublishSubject
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -30,10 +33,13 @@ class DeviceTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         newAndroidLocation = mock(android.location.Location::class.java)
-        getMockLocation()
+//        getMockLocation()
 
         `when`(mockContext.getSystemService(Context.LOCATION_SERVICE))
             .thenReturn(mockLocationManager)
+        `when`(mockLocation.latitude).thenReturn(1.0)
+        `when`(mockLocation.longitude).thenReturn(1.0)
+//        `when`(mockLocation.longLat).thenReturn(1.0)
         mockLocation = Location(mockContext)
 
         sut = Device(
@@ -92,5 +98,37 @@ class DeviceTest {
             LocationManager.GPS_PROVIDER,
             newAndroidLocation
         )
+    }
+
+
+    val testPublisher = PublishSubject.create<String>()
+
+    var value:String = "initial"
+
+    fun myRxFunction(ioThread:Scheduler,mainThread: Scheduler){
+        testPublisher
+            .subscribeOn(ioThread)
+            .observeOn(mainThread)
+            .subscribe{
+                saveString(it)
+            }
+    }
+
+    fun saveString(message:String){
+        value = message
+    }
+
+    @Test
+    fun myRxFunctionTest(){
+        val testString = "test"
+        val testScheduler = TestScheduler()
+
+        myRxFunction(testScheduler,testScheduler)
+
+        testScheduler.triggerActions()
+
+        testPublisher.onNext(testString)
+
+        assertEquals(value,testString)
     }
 }

@@ -9,8 +9,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.otssso.samimchala.ravelinlibrary.RavelinSdk
+import com.otssso.samimchala.ravelinlibrary.SchedulerProvider
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-
+import io.reactivex.schedulers.Schedulers
 
 //could have created a view model to lift all of the logic from the view, and use data binding
 class MainActivity : AppCompatActivity() {
@@ -38,8 +40,16 @@ class MainActivity : AppCompatActivity() {
         } else {
             initSdk()
             findViewById<Button>(R.id.device_information).setOnClickListener {
-                blob = sdk.getBlob()
-                findViewById<TextView>(R.id.blob).text = blob
+                Log.d("sm", "=-0=-0=-0=-00000   CLICKED")
+
+                sdk.getBlobJSON()!!
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe{
+                        Log.d("sm", "HELLO =-0=-0=-0=-00000 mainactivity  ${it}")
+                        findViewById<TextView>(R.id.blob).text = it
+                        blob = it
+                    }
             }
 
             findViewById<Button>(R.id.send_information).setOnClickListener {
@@ -75,11 +85,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initSdk() {
-        sdk = RavelinSdk.Builder(this)
+        sdk = RavelinSdk.Builder(this, schedulerProvider = SchedulerProvider())
             .setEmail("smchala@hotmail.com")
             .setName("Sami Mchala")
             .setSecretKey("8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7")//... :)
             .create()
+
+//        sdk.getBlobJSON()
     }
 
     override fun onDestroy() {
