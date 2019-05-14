@@ -16,7 +16,7 @@ class Device(
     ),
     val userAgent: String = WebView(context).settings.userAgentString,
     val model: String = android.os.Build.MODEL,
-    val os: String = System.getProperty("os.version"),
+    val os: String? = System.getProperty("os.version"),
     var deviceId: String = "",
     val location: Location = Location(context)
 )

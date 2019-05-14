@@ -34,6 +34,8 @@ class RavelinSdkTest {
     private lateinit var mockLocationManager: LocationManager
     @Mock
     lateinit var mockLocation: Location
+    private var result = ""
+    lateinit var json: Blob
 
     @Before
     fun setUp() {
@@ -66,6 +68,16 @@ class RavelinSdkTest {
             .setName("name")
             .setSecretKey("secret")
             .create()
+
+        sut.getBlobJSON()?.let { observer ->
+            observer.subscribeOn(TrampolineSchedulerProvider().io())
+                .observeOn(TrampolineSchedulerProvider().ui())
+                .subscribe {
+                    result = it
+                }
+
+            json = Gson().fromJson<Blob>(result, Blob::class.java)
+        }
     }
 
     @After
@@ -82,59 +94,24 @@ class RavelinSdkTest {
 
     @Test
     fun `checking json blob has timestamp`() {
-
-        sut.getBlobJSON()?.let { observer ->
-            var result = ""
-            observer.subscribeOn(TrampolineSchedulerProvider().io())
-                .observeOn(TrampolineSchedulerProvider().ui())
-                .subscribe {
-                    result = it
-                }
-
-            val json = Gson().fromJson<Blob>(result, Blob::class.java)
-
-            assertNotNull(json.timestamp)
-        }
+        assertNotNull(json.timestamp)
     }
 
     @Test
     fun `checking json blob has a device object`() {
-
-        sut.getBlobJSON()?.let { observer ->
-            var result = ""
-            observer.subscribeOn(TrampolineSchedulerProvider().io())
-                .observeOn(TrampolineSchedulerProvider().ui())
-                .subscribe {
-                    result = it
-                }
-
-            val json = Gson().fromJson<Blob>(result, Blob::class.java)
-
-            assertEquals(40, json.device.deviceId.length)
-            assertEquals("4.4.4", json.device.os)
-            assertEquals("userAgent", json.device.userAgent)
-            assertEquals("Google", json.device.model)
-            assertEquals(100.0, json.device.location.latitude)
-            assertEquals(100.0, json.device.location.latitude)
-        }
+        assertEquals(40, json.device.deviceId.length)
+        assertEquals("4.4.4", json.device.os)
+        assertEquals("userAgent", json.device.userAgent)
+        assertEquals("Google", json.device.model)
+        assertEquals(100.0, json.device.location.latitude)
+        assertEquals(100.0, json.device.location.latitude)
     }
 
     @Test
     fun `checking json blob has a customer object`() {
-        sut.getBlobJSON()?.let { observer ->
-            var result = ""
-            observer.subscribeOn(TrampolineSchedulerProvider().io())
-                .observeOn(TrampolineSchedulerProvider().ui())
-                .subscribe {
-                    result = it
-                }
-
-            val json = Gson().fromJson<Blob>(result, Blob::class.java)
-
-            assertEquals("email", json.customer.customerId)
-            assertEquals("name", json.customer.name)
-            assertEquals("email", json.customer.email)
-        }
+        assertEquals("email", json.customer.customerId)
+        assertEquals("name", json.customer.name)
+        assertEquals("email", json.customer.email)
     }
 }
 

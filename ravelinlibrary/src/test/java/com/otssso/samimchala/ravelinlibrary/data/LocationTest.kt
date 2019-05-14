@@ -39,8 +39,6 @@ class LocationTest{
             android.location.Criteria.POWER_LOW,
             android.location.Criteria.ACCURACY_FINE)
 
-//        newLocation = android.location.Location(LocationManager.GPS_PROVIDER)
-
         mockLocationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
 
         mockLocationManager.setTestProviderStatus(
