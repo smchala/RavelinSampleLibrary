@@ -3,16 +3,13 @@ package com.otssso.samimchala.ravelinsample
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.otssso.samimchala.ravelinlibrary.RavelinSdk
 import com.otssso.samimchala.ravelinlibrary.SchedulerProvider
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
 //could have created a view model to lift all of the logic from the view, and use data binding
 class MainActivity : AppCompatActivity() {
@@ -41,22 +38,26 @@ class MainActivity : AppCompatActivity() {
             initSdk()
             findViewById<Button>(R.id.device_information).setOnClickListener {
 
-                sdk.getBlobJSON()?.let {observer ->
-                    observer.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe{
-                            Log.d("sm", "HELLO =-0=-0=-0=-00000 mainactivity  ${it}")
+                compositeDisposable.add(sdk.getBlobJSON()?.let { observer ->
+                    observer.subscribeOn(SchedulerProvider().io())
+                        .observeOn(SchedulerProvider().ui())
+                        .subscribe {
                             findViewById<TextView>(R.id.blob).text = it
                             blob = it
                         }
-                }
+                })
             }
 
             findViewById<Button>(R.id.send_information).setOnClickListener {
 
                 if (blob.isNotEmpty()) {
                     sdk.postDeviceInformation()
-                }else{
+                        .subscribeOn(SchedulerProvider().io())
+                        .observeOn(SchedulerProvider().ui())
+                        .subscribe(
+                            { _ -> Toast.makeText(this, "SUCCESS!", Toast.LENGTH_SHORT).show() },
+                            { error -> Toast.makeText(this, "ERROR ${error.message}", Toast.LENGTH_SHORT).show() })
+                } else {
                     Toast.makeText(this, "Please get device info!", Toast.LENGTH_SHORT).show()
                 }
             }
