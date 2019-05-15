@@ -23,21 +23,14 @@ class Encryption{
         return cipher.doFinal(encrypted)
     }
 
-    fun encryptAndHash(key1:String, data:ByteArray): String {
-        val keyStart = key1.toByteArray()
+    fun encryptAndHash(key1:String, data:ByteArray): String = HashUtils.sha1(encryptData(key1, data))
+
+    private fun encryptData(key1:String, data:ByteArray):String {
+         val keyStart = key1.toByteArray()
 
         val key = setKey(keyStart)
 
-        val encryptedData = encrypt(key, data)
-
-        //just for logging
-        val decryptedData = decrypt(key, encryptedData)
-//        Log.d("sm", "decryptedData =-0=-0=-0  ${String(decryptedData)}")
-//        Log.d("sm", "decryptedData =-0=-0=-0 key ${String(key)}")
-//        Log.d("sm", "decryptedData =-0=-0=-0 key ${key}}")
-
-        return HashUtils.sha1(String(encryptedData))
-
+        return String(encrypt(key, data))
     }
 
     private fun setKey(keyStart: ByteArray): ByteArray {
@@ -46,7 +39,6 @@ class Encryption{
         sr.setSeed(keyStart)
         kgen.init(128, sr) // 192 and 256 bits may not be available
         val skey = kgen.generateKey()
-        val key = skey.getEncoded()
-        return key
+        return skey.getEncoded()
     }
 }

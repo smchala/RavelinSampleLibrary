@@ -2,6 +2,7 @@ package com.otssso.samimchala.ravelinlibrary
 
 import android.content.Context
 import com.google.gson.Gson
+import com.otssso.samimchala.ravelinlibrary.api.CustomerApi
 import com.otssso.samimchala.ravelinlibrary.api.RavelinApi
 import com.otssso.samimchala.ravelinlibrary.data.Blob
 import com.otssso.samimchala.ravelinlibrary.data.Customer
@@ -16,11 +17,14 @@ import retrofit2.Response
 class RavelinSdk(
     val builder: Builder,
     private val schedulerProvider: BaseSchedulerProvider,//experimenting
-    private val encryption: Encryption = Encryption()
+    private val encryption: Encryption = Encryption(),
+    var customerApi: CustomerApi = RavelinApi.getRavelinClient()
+
 ) {
 
+    lateinit var json: String
     var blobJson: PublishSubject<String> = PublishSubject.create()
-    private lateinit var blob: Blob
+    lateinit var blob: Blob
 
     private fun convertToJson(blob: Blob): String = Gson().toJson(blob)
 
@@ -65,8 +69,7 @@ class RavelinSdk(
     }
 
     fun postDeviceInformation(): Single<Response<String>> {
-        val customerApi = RavelinApi.getRavelinClient()
-        val json = Gson().toJson(blob)
+        json = Gson().toJson(blob)
         return customerApi.sendBlob(json)
     }
 

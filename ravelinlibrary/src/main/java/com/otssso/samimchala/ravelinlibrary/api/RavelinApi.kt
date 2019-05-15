@@ -15,19 +15,22 @@ object RavelinApi {
 
     private lateinit var customerApi: CustomerApi
 
+
+    var headerAuthorizationInterceptor  = object : Interceptor {
+        @Throws(IOException::class)
+        override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+            var request = chain.request()
+            val headers = request.headers().newBuilder()
+                .add("Content-Type", "application/json;charset=utf-8").build()
+            request = request.newBuilder().headers(headers).build()
+            return chain.proceed(request)
+        }
+    }
+
     fun getRavelinClient(): CustomerApi {
 
         val clientBuilder = OkHttpClient.Builder()
-        val headerAuthorizationInterceptor = object : Interceptor {
-            @Throws(IOException::class)
-            override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
-                var request = chain.request()
-                val headers = request.headers().newBuilder()
-                    .add("Content-Type", "application/json;charset=utf-8").build()
-                request = request.newBuilder().headers(headers).build()
-                return chain.proceed(request)
-            }
-        }
+
         clientBuilder.addInterceptor(headerAuthorizationInterceptor)
 
         val client = clientBuilder.build()

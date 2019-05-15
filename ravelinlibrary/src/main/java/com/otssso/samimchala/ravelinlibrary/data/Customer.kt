@@ -7,7 +7,7 @@ data class Customer(
     var email: String = "email@email.com",
     var name: String = "default"
 ) {
-    val anyEmailRegex = compile(
+    @Transient val anyEmailRegex = compile(
         "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                 "\\@" +
                 "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
@@ -17,9 +17,8 @@ data class Customer(
                 ")+"
     )
     init {
-
         val (letters, notLetters) = name.toCharArray().partition { it.isLetter() }
-        if (notLetters.size > 0) {
+        if (notLetters.isNotEmpty()) {
             name = "default"
         }
 
